@@ -1,0 +1,99 @@
+
+/* =========================================================
+   1. VARIABEL WARNA KHUSUS
+   ========================================================= */
+
+/* Variabel warna yang digunakan oleh komponen khusus.
+   Memudahkan perubahan warna tanpa mengubah banyak aturan CSS. */
+:root {
+    --primary-color: hsl(210, 100%, 30%);
+    --success-color: #4CAF50;
+    --error-color: #f44336;
+}
+
+
+/* =========================================================
+   2. KOMPONEN KHUSUS TRACKING PENGIRIMAN
+   ========================================================= */
+
+/* Mengatur daftar riwayat perjalanan paket.
+   list-style: none menghilangkan simbol daftar bawaan.
+   position: relative menjadi acuan garis timeline.
+   margin-left memberikan ruang untuk garis penanda. */
+.timeline {
+    list-style: none;
+    padding: 0;
+    position: relative;
+    margin-left: 20px;
+}
+
+/* Membuat garis vertikal yang menghubungkan
+   seluruh penanda pada timeline. */
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    background: #ccc;
+}
+
+/* Mengatur setiap item riwayat perjalanan paket. */
+.timeline li {
+    position: relative;
+    margin-bottom: 20px;
+    padding-left: 20px;
+}
+
+/* Membuat lingkaran penanda pada setiap riwayat. */
+.timeline li::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    border: 3px solid white;
+}
+
+/* Memberikan warna hijau pada penanda riwayat pertama
+   untuk menunjukkan informasi perjalanan terbaru. */
+.timeline li:first-child::before {
+    background-color: var(--success-color);
+}
+
+
+/* =========================================================
+   3. STATUS PENGIRIMAN
+   ========================================================= */
+
+/* Warna status ketika paket sudah dikirim. */
+.status-badge.Dikirim {
+    background-color: var(--success-color);
+}
+
+/* Warna status ketika paket masih dalam perjalanan. */
+.status-badge.Perjalanan {
+    background-color: orange;
+}
+
+/* =========================================================
+   4. FOOTER
+   ========================================================= */
+
+/* Mengatur posisi footer di bagian bawah halaman.
+   Teks berada di tengah dengan warna biru tua. */
+.footer {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #1e3a8a;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 50;
+}

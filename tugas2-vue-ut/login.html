@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Mengatur karakter agar halaman dapat menampilkan berbagai huruf dan simbol. -->
+    <meta charset="UTF-8">
+
+    <!-- Mengatur tampilan halaman agar menyesuaikan ukuran layar perangkat. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Menentukan judul halaman yang tampil pada tab browser. -->
+    <title>Login SITTA-UT</title>
+
+    <!-- Menghubungkan Tailwind CSS untuk membantu mengatur desain halaman. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Menghubungkan SweetAlert2 untuk menampilkan pesan pop-up. -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Menggunakan Google Fonts dengan jenis huruf DM Sans. -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
+    <!-- Menghubungkan file CSS eksternal untuk pengaturan tampilan tambahan. -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<!-- Bagian body merupakan area utama yang menampilkan halaman login. -->
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden bg-blue-50">
+
+    <!-- Membuat latar belakang berbentuk gelombang menggunakan elemen SVG. -->
+    <svg viewBox="0 0 1440 320" class="absolute bottom-0 left-0 w-full z-0 drop-shadow-lg pointer-events-none">
+
+        <!-- Membuat gelombang pertama dengan warna biru. -->
+        <path fill="#1e3a8a" fill-opacity="1"
+            d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,144C672,139,768,181,864,197.3C960,213,1056,203,1152,176C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+        </path>
+
+        <!-- Membuat gelombang kedua dengan warna oranye sebagai hiasan latar belakang. -->
+        <path fill="#f97316" fill-opacity="0.9"
+            d="M0,256L48,229.3C96,203,192,149,288,149.3C384,149,480,203,576,213.3C672,224,768,192,864,170.7C960,149,1056,139,1152,149.3C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+        </path>
+    </svg>
+
+    <!-- Container utama yang membungkus kotak login. -->
+    <div class="z-10 w-full max-w-md px-4">
+
+        <!-- Membuat kotak login dengan latar putih, sudut melengkung, dan bayangan. -->
+        <div class="bg-white rounded-2xl shadow-2xl p-8 sm:p-10 border border-gray-100">
+
+            <!-- Bagian header yang berisi logo, judul, dan deskripsi halaman login. -->
+            <div class="text-center mb-8">
+
+                <!-- Menampilkan logo Universitas Terbuka. -->
+                <!-- Jika file ut.png tidak ditemukan, gambar akan menggunakan logo_ut.svg. -->
+                <img 
+                    src="assets/ut.png" 
+                    onerror="this.onerror=null; this.src='assets/logo_ut.svg';"
+                    alt="Logo UT"
+                    class="w-20 h-20 mx-auto mb-4 object-contain"
+                >
+
+                <!-- Menampilkan judul halaman login SITTA-UT. -->
+                <h1 class="text-3xl font-bold text-blue-900 mb-2">
+                    Login to SITTA-UT
+                </h1>
+
+                <!-- Menampilkan keterangan singkat mengenai fungsi sistem. -->
+                <p class="text-gray-500 text-sm">
+                    Masuk ke sistem tracking dan bahan ajar
+                </p>
+            </div>
+
+            <!-- Form untuk menerima email dan password pengguna. -->
+            <form id="loginForm" class="space-y-5">
+
+                <!-- Bagian input email pengguna. -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                        Email
+                    </label>
+
+                    <!-- Input untuk memasukkan email pengguna. -->
+                    <!-- type="email" membantu memvalidasi format email. -->
+                    <input 
+                        type="email" 
+                        id="email" 
+                        placeholder="Contoh: admin@ut.ac.id"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        required
+                    >
+                </div>
+
+                <!-- Bagian input password pengguna. -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                        Password
+                    </label>
+
+                    <!-- Input password agar karakter yang diketik tidak terlihat langsung. -->
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Masukkan password Anda"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        required
+                    >
+
+                    <!-- Menampilkan tautan untuk pengguna yang lupa password. -->
+                    <div class="flex justify-end mt-2">
+                        <a href="#" id="forgetLink" class="text-sm text-blue-600 hover:text-orange-500 font-medium transition-colors">
+                            Lupa Password?
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tombol untuk mengirimkan email dan password ke proses validasi login. -->
+                <button 
+                    type="submit"
+                    class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                    Login
+                </button>
+            </form>
+
+            <!-- Bagian untuk pengguna yang belum memiliki akun. -->
+            <div class="mt-8 text-center">
+
+                <!-- Tautan untuk menampilkan informasi pembuatan akun baru. -->
+                <a href="#" id="registerLink" class="text-sm text-blue-600 hover:text-orange-500 font-medium transition-colors">
+                    Belum punya akun?
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer untuk menampilkan identitas pembuat halaman. -->
+    <div class="footer">
+        <p>Dibuat oleh: Sarah Hanifah | NIM: 053132687</p>
+    </div>
+
+    <!-- Memanggil file dataBahanAjar.js yang berisi data pengguna untuk proses login. -->
+    <script src="js/dataBahanAjar.js"></script>
+
+    <!-- Script untuk mengatur proses login, lupa password, dan pendaftaran akun. -->
+    <script>
+
+        // Mengambil elemen form login berdasarkan ID loginForm.
+        document.getElementById("loginForm").addEventListener("submit", function (e) {
+
+            // Mencegah form melakukan refresh halaman ketika tombol Login ditekan.
+            e.preventDefault();
+
+            // Mengambil nilai email dari input dan menghapus spasi di awal maupun akhir.
+            const email = document.getElementById("email").value.trim();
+
+            // Mengambil nilai password dari input dan menghapus spasi di awal maupun akhir.
+            const password = document.getElementById("password").value.trim();
+
+            // Mencari data pengguna yang email dan password-nya sesuai dengan input.
+            const user = dataPengguna.find(function (item) {
+                return item.email === email && item.password === password;
+            });
+
+            // Memeriksa apakah data pengguna ditemukan.
+            if (!user) {
+
+                // Menampilkan pesan gagal jika email atau password tidak cocok.
+                Swal.fire({
+                    title: "Login Gagal",
+                    text: "Email atau password salah.",
+                    icon: "error",
+                    confirmButtonColor: "#1e3a8a"
+                });
+
+                // Menghentikan proses login jika data tidak sesuai.
+                return;
+            }
+
+            // Menyimpan status login pengguna ke localStorage.
+            localStorage.setItem("isLogin", "true");
+
+            // Menyimpan nama pengguna yang berhasil login.
+            localStorage.setItem("namaUser", user.nama);
+
+            // Menyimpan role atau hak akses pengguna.
+            localStorage.setItem("roleUser", user.role);
+
+            // Menyimpan informasi lokasi pengguna.
+            localStorage.setItem("lokasiUser", user.lokasi);
+
+            // Menampilkan pesan bahwa proses login berhasil.
+            Swal.fire({
+                title: "Login Berhasil!",
+                text: "Selamat datang, " + user.nama + ".",
+                icon: "success",
+                confirmButtonColor: "#0ab5ff",
+                confirmButtonText: "Lanjutkan"
+
+            // Setelah pengguna menekan tombol Lanjutkan, halaman diarahkan ke dashboard.
+            }).then(function () {
+                window.location.href = "dashboard.html";
+            });
+        });
+
+        // Mengambil elemen link Lupa Password dan menambahkan event klik.
+        document.getElementById("forgetLink").addEventListener("click", function (e) {
+
+            // Mencegah link berpindah ke halaman lain.
+            e.preventDefault();
+
+            // Menampilkan informasi bahwa pengguna harus menghubungi admin untuk reset password.
+            Swal.fire({
+                title: "Lupa Password?",
+                text: "Silakan hubungi admin UT untuk reset password.",
+                icon: "info"
+            });
+        });
+
+        // Mengambil elemen link pendaftaran dan menambahkan event klik.
+        document.getElementById("registerLink").addEventListener("click", function (e) {
+
+            // Mencegah link berpindah ke halaman lain.
+            e.preventDefault();
+
+            // Menampilkan informasi mengenai cara membuat akun baru.
+            Swal.fire({
+                title: "Buat Akun Baru",
+                text: "Silakan hubungi admin UT untuk pembuatan akun.",
+                icon: "question"
+            });
+        });
+    </script>
+
+</body>
+</html>

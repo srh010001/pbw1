@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Memeriksa status login pengguna sebelum halaman laporan ditampilkan. -->
+    <script>
+        // Jika pengguna belum login, arahkan kembali ke halaman login.
+        if (localStorage.getItem("isLogin") !== "true") {
+            window.location.href = "index.html";
+        }
+    </script>
+
+    <!-- Mengatur karakter agar mendukung berbagai jenis huruf dan simbol. -->
+    <meta charset="UTF-8">
+
+    <!-- Mengatur tampilan halaman agar responsif pada berbagai ukuran layar. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Menentukan judul halaman yang tampil pada tab browser. -->
+    <title>Laporan - SITTA UT</title>
+
+    <!-- Menghubungkan Tailwind CSS untuk membantu mengatur tampilan halaman. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Menghubungkan SweetAlert2 untuk menampilkan pop-up konfirmasi dan informasi. -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Menggunakan Google Fonts dengan jenis huruf DM Sans. -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
+    <!-- Menghubungkan Font Awesome untuk menampilkan ikon pada halaman. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Menghubungkan file CSS eksternal untuk pengaturan tampilan tambahan. -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<!-- Bagian body merupakan area utama yang menampilkan seluruh isi halaman laporan. -->
+<body class="min-h-screen relative overflow-x-hidden bg-blue-50">
+
+    <!-- --- 1. NAVIGATION BAR (NAVBAR) --- -->
+    <!-- Bagian navigasi yang berisi logo, menu halaman, dan tombol logout. -->
+    <nav class="bg-[#1e3a8a] text-white px-6 py-4 flex flex-wrap justify-between items-center relative z-50 shadow-md">
+
+        <!-- Menampilkan logo Universitas Terbuka dan nama sistem SITTA-UT. -->
+        <div class="flex items-center gap-4">
+            <!-- Jika logo diklik, pengguna diarahkan ke halaman dashboard. -->
+            <a href="dashboard.html" class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded-lg shadow-sm">
+
+                    <!-- Menampilkan logo UT. Jika ut.png gagal dimuat, gambar diganti dengan logo_ut.svg. -->
+                    <img 
+                        src="assets/ut.png" 
+                        onerror="this.onerror=null; this.src='assets/logo_ut.svg';"
+                        alt="Logo UT"
+                        class="w-9 h-9 object-contain"
+                    >
+                </div>
+
+                <!-- Menampilkan nama sistem pada ukuran layar tertentu. -->
+                <span class="font-bold text-xl tracking-wide hidden sm:block">
+                    SITTA-UT
+                </span>
+            </a>
+        </div>
+
+        <!-- Menu navigasi utama untuk berpindah antarhalaman. -->
+        <ul class="hidden md:flex space-x-8 items-center font-medium text-sm">
+            <li>
+                <!-- Menu untuk membuka halaman informasi bahan ajar. -->
+                <a href="stock.html" class="nav-link hover:text-orange-300">
+                    Informasi Bahan Ajar
+                </a>
+            </li>
+
+            <li>
+                <!-- Menu untuk membuka halaman tracking pengiriman. -->
+                <a href="tracking.html" class="nav-link hover:text-orange-300">
+                    Tracking Pengiriman
+                </a>
+            </li>
+
+            <!-- Menu laporan dilengkapi dropdown yang berisi dua submenu. -->
+            <li class="relative group pb-2 pt-2">
+                <!-- Menu Laporan diberi warna berbeda sebagai penanda halaman aktif. -->
+                <a href="laporan.html" class="nav-link text-orange-300 hover:text-orange-300 flex items-center gap-1">
+                    Laporan
+                    <!-- Ikon panah menandakan adanya menu dropdown. -->
+                    <i class="fa-solid fa-caret-down"></i>
+                </a>
+
+                <!-- Submenu ditampilkan ketika kursor diarahkan ke menu Laporan. -->
+                <div class="hidden group-hover:block absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-xl overflow-hidden border border-gray-100 z-50">
+
+                    <!-- Mengarahkan pengguna ke bagian monitoring progress DO. -->
+                    <a href="#monitoring" class="block px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 border-b border-gray-50">
+                        Monitoring Progress DO Bahan Ajar
+                    </a>
+
+                    <!-- Mengarahkan pengguna ke bagian rekap bahan ajar. -->
+                    <a href="#rekap" class="block px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">
+                        Rekap Bahan Ajar
+                    </a>
+                </div>
+            </li>
+
+            <li>
+                <!-- Menu untuk membuka halaman histori transaksi. -->
+                <a href="histori.html" class="nav-link hover:text-orange-300">
+                    Histori Transaksi
+                </a>
+            </li>
+        </ul>
+
+        <!-- Tombol untuk keluar dari sistem. -->
+        <button id="logoutBtn"
+            class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-5 rounded-lg shadow transition-colors flex items-center gap-2 text-sm mt-4 md:mt-0 cursor-pointer">
+
+            <!-- Ikon logout dari Font Awesome. -->
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </button>
+    </nav>
+
+    <!-- --- 2. KONTEN UTAMA LAPORAN --- -->
+    <!-- Container utama yang dikelola oleh Vue.js melalui ID laporanApp. -->
+    <!-- v-cloak mencegah tampilan kode Vue sebelum proses pemuatan selesai. -->
+    <main id="laporanApp" v-cloak class="container mx-auto px-4 py-10">
+
+        <!-- Header halaman yang berisi judul dan deskripsi laporan. -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100 mb-8">
+            <h1 class="text-2xl font-bold text-blue-900 flex items-center gap-2">
+
+                <!-- Ikon grafik sebagai penanda halaman laporan. -->
+                <i class="fa-solid fa-chart-column text-orange-500"></i>
+                Laporan SITTA-UT
+            </h1>
+
+            <!-- Penjelasan mengenai isi laporan yang tersedia. -->
+            <p class="text-gray-500 mt-2">
+                Monitoring progress Delivery Order dan rekap stok bahan ajar.
+            </p>
+        </div>
+
+        <!-- --- 3. RINGKASAN DATA LAPORAN --- -->
+        <!-- Menampilkan empat informasi utama dalam bentuk kartu ringkasan. -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+
+            <!-- Kartu untuk menampilkan jumlah seluruh bahan ajar. -->
+            <div class="bg-white rounded-2xl shadow p-6 border border-gray-100">
+                <p class="text-sm text-gray-500">Total Bahan Ajar</p>
+                <!-- Nilai totalBahanAjar diambil dari data yang dikelola Vue.js. -->
+                <h2 class="text-3xl font-bold text-blue-900">{{ totalBahanAjar }}</h2>
+            </div>
+
+            <!-- Kartu untuk menampilkan jumlah keseluruhan stok bahan ajar. -->
+            <div class="bg-white rounded-2xl shadow p-6 border border-gray-100">
+                <p class="text-sm text-gray-500">Total Stok</p>
+                <!-- Nilai totalStok ditampilkan secara otomatis dari Vue.js. -->
+                <h2 class="text-3xl font-bold text-blue-900">{{ totalStok }}</h2>
+            </div>
+
+            <!-- Kartu untuk menampilkan jumlah stok bahan ajar yang perlu diisi ulang. -->
+            <div class="bg-white rounded-2xl shadow p-6 border border-gray-100">
+                <p class="text-sm text-gray-500">Stok Re-order</p>
+                <!-- Nilai stokMenipis menunjukkan jumlah stok yang perlu diperhatikan. -->
+                <h2 class="text-3xl font-bold text-orange-500">{{ stokMenipis }}</h2>
+            </div>
+
+            <!-- Kartu untuk menampilkan jumlah seluruh Delivery Order. -->
+            <div class="bg-white rounded-2xl shadow p-6 border border-gray-100">
+                <p class="text-sm text-gray-500">Total DO</p>
+                <!-- Nilai totalDO diambil dari data Delivery Order. -->
+                <h2 class="text-3xl font-bold text-green-700">{{ totalDO }}</h2>
+            </div>
+        </div>
+
+        <!-- --- 4. MONITORING PROGRESS DELIVERY ORDER --- -->
+        <!-- Bagian ini menampilkan daftar DO beserta status pengirimannya. -->
+        <div id="monitoring" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
+
+            <!-- Judul bagian monitoring DO. -->
+            <div class="p-6 border-b border-gray-100">
+                <h2 class="text-xl font-bold text-blue-900">
+                    Monitoring Progress DO Bahan Ajar
+                </h2>
+            </div>
+
+            <!-- Membuat tabel dapat digeser secara horizontal pada layar kecil. -->
+            <div class="overflow-x-auto">
+
+                <!-- Tabel untuk menampilkan informasi setiap Delivery Order. -->
+                <table class="w-full text-sm text-left text-gray-600">
+
+                    <!-- Kepala tabel berisi nama-nama kolom informasi DO. -->
+                    <thead class="text-xs text-white uppercase bg-blue-700">
+                        <tr>
+                            <th class="px-6 py-4">Nomor DO</th>
+                            <th class="px-6 py-4">NIM</th>
+                            <th class="px-6 py-4">Nama</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Ekspedisi</th>
+                            <th class="px-6 py-4">Tanggal Kirim</th>
+                            <th class="px-6 py-4">Paket</th>
+                            <th class="px-6 py-4">Total</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Isi tabel diisi secara dinamis menggunakan perulangan Vue.js. -->
+                    <tbody>
+
+                        <!-- v-for mengulang data daftarDO untuk membuat baris tabel. -->
+                        <!-- :key menggunakan nomor DO sebagai identitas setiap baris. -->
+                        <tr v-for="item in daftarDO" :key="item.nomorDO" class="border-b hover:bg-gray-50">
+
+                            <!-- Menampilkan nomor Delivery Order. -->
+                            <td class="px-6 py-4 font-bold text-blue-900">{{ item.nomorDO }}</td>
+
+                            <!-- Menampilkan NIM mahasiswa. -->
+                            <td class="px-6 py-4">{{ item.nim }}</td>
+
+                            <!-- Menampilkan nama penerima paket. -->
+                            <td class="px-6 py-4">{{ item.nama }}</td>
+
+                            <!-- Menampilkan status proses pengiriman DO. -->
+                            <td class="px-6 py-4">{{ item.status }}</td>
+
+                            <!-- Menampilkan nama jasa ekspedisi yang digunakan. -->
+                            <td class="px-6 py-4">{{ item.ekspedisi }}</td>
+
+                            <!-- Menampilkan tanggal pengiriman paket. -->
+                            <td class="px-6 py-4">{{ item.tanggalKirim }}</td>
+
+                            <!-- Menampilkan informasi paket bahan ajar. -->
+                            <td class="px-6 py-4">{{ item.paket }}</td>
+
+                            <!-- Menampilkan total biaya dengan format mata uang Rupiah. -->
+                            <td class="px-6 py-4">{{ formatRupiah(item.total) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- --- 5. REKAPITULASI STOK BAHAN AJAR --- -->
+        <!-- Bagian ini menampilkan daftar dan kondisi stok setiap bahan ajar. -->
+        <div id="rekap" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+
+            <!-- Judul bagian rekap bahan ajar. -->
+            <div class="p-6 border-b border-gray-100">
+                <h2 class="text-xl font-bold text-blue-900">
+                    Rekap Bahan Ajar
+                </h2>
+            </div>
+
+            <!-- Membuat tabel rekap dapat digeser secara horizontal pada layar kecil. -->
+            <div class="overflow-x-auto">
+
+                <!-- Tabel untuk menampilkan data stok bahan ajar. -->
+                <table class="w-full text-sm text-left text-gray-600">
+
+                    <!-- Kepala tabel berisi informasi yang akan ditampilkan. -->
+                    <thead class="text-xs text-white uppercase bg-blue-700">
+                        <tr>
+                            <th class="px-6 py-4">Kode</th>
+                            <th class="px-6 py-4">Judul</th>
+                            <th class="px-6 py-4">Kategori</th>
+                            <th class="px-6 py-4">UPBJJ</th>
+                            <th class="px-6 py-4">Qty</th>
+                            <th class="px-6 py-4">Safety</th>
+                            <th class="px-6 py-4">Status</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Isi tabel diambil dari data stok yang dikelola Vue.js. -->
+                    <tbody>
+
+                        <!-- v-for mengulang setiap data bahan ajar dalam stokList. -->
+                        <!-- :key menggunakan kode bahan ajar sebagai identitas setiap baris. -->
+                        <tr v-for="item in stokList" :key="item.kode" class="border-b hover:bg-gray-50">
+
+                            <!-- Menampilkan kode bahan ajar. -->
+                            <td class="px-6 py-4 font-bold text-blue-900">{{ item.kode }}</td>
+
+                            <!-- Menampilkan judul bahan ajar. -->
+                            <td class="px-6 py-4">{{ item.judul }}</td>
+
+                            <!-- Menampilkan kategori bahan ajar. -->
+                            <td class="px-6 py-4">{{ item.kategori }}</td>
+
+                            <!-- Menampilkan lokasi UPBJJ. -->
+                            <td class="px-6 py-4">{{ item.upbjj }}</td>
+
+                            <!-- Menampilkan jumlah stok yang tersedia. -->
+                            <td class="px-6 py-4">{{ item.qty }}</td>
+
+                            <!-- Menampilkan jumlah stok minimum atau safety stock. -->
+                            <td class="px-6 py-4">{{ item.safety }}</td>
+
+                            <!-- Menampilkan status stok berdasarkan fungsi statusStok(). -->
+                            <td class="px-6 py-4">
+
+                                <!-- :class mengatur warna tampilan berdasarkan hasil statusClass(item). -->
+                                <span class="px-3 py-1 rounded-full text-xs font-bold" :class="statusClass(item)">
+                                    {{ statusStok(item) }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        <!-- Menampilkan pesan jika daftar stok bahan ajar masih kosong. -->
+                        <tr v-if="stokList.length === 0">
+                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                Data rekap bahan ajar belum tersedia.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- --- 6. SCRIPT DAN DEPENDENSI APLIKASI --- -->
+    <!-- Memanggil Vue.js versi 3 untuk mengelola data dan tampilan secara reaktif. -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Memanggil file yang berisi data bahan ajar dan data pendukung aplikasi. -->
+    <script src="js/dataBahanAjar.js"></script>
+
+    <!-- Memanggil file JavaScript yang mengatur logika halaman laporan. -->
+    <script src="js/laporan-app.js"></script>
+
+    <!-- --- 7. LOGIKA LOGOUT --- -->
+    <!-- Script untuk menangani proses keluar dari sistem. -->
+    <script>
+
+        // Mengambil elemen tombol logout berdasarkan ID logoutBtn.
+        const logoutBtn = document.getElementById("logoutBtn");
+
+        // Memeriksa apakah tombol logout tersedia pada halaman.
+        if (logoutBtn) {
+
+            // Menambahkan event klik pada tombol logout.
+            logoutBtn.addEventListener("click", function () {
+
+                // Menampilkan pop-up konfirmasi sebelum pengguna keluar dari sistem.
+                Swal.fire({
+                    title: "Yakin ingin logout?",
+                    text: "Anda akan keluar dari sistem.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#1e3a8a",
+                    cancelButtonColor: "#f97316",
+                    confirmButtonText: "Logout",
+                    cancelButtonText: "Batal"
+
+                // Memeriksa hasil pilihan pengguna pada pop-up konfirmasi.
+                }).then(function (result) {
+
+                    // Menjalankan proses logout jika pengguna memilih Logout.
+                    if (result.isConfirmed) {
+
+                        // Menghapus data status login dari localStorage.
+                        localStorage.removeItem("isLogin");
+
+                        // Menghapus nama pengguna yang tersimpan.
+                        localStorage.removeItem("namaUser");
+
+                        // Menghapus informasi role atau hak akses pengguna.
+                        localStorage.removeItem("roleUser");
+
+                        // Menghapus informasi lokasi pengguna.
+                        localStorage.removeItem("lokasiUser");
+
+                        // Menampilkan pesan bahwa pengguna berhasil logout.
+                        Swal.fire({
+                            title: "Logout Berhasil",
+                            text: "Anda telah keluar dari sistem.",
+                            icon: "success",
+                            confirmButtonColor: "#1e3a8a"
+
+                        // Setelah pesan ditutup, pengguna diarahkan ke halaman awal.
+                        }).then(function () {
+                            window.location.href = "index.html";
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

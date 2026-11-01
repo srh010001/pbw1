@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- 1. PROTEKSI LOGIN (AUTH GATE) -->
+    <!-- Memeriksa apakah pengguna sudah login.
+         Jika belum login, pengguna akan diarahkan ke halaman login.html. -->
+    <script>
+        if (localStorage.getItem("isLogin") !== "true") {
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <!-- Mengatur karakter agar mendukung berbagai jenis tulisan dan simbol. -->
+    <meta charset="UTF-8">
+
+    <!-- Mengatur tampilan halaman agar menyesuaikan ukuran layar perangkat. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Menentukan judul yang muncul pada tab browser. -->
+    <title>Dashboard - SITTA UT</title>
+
+    <!-- Menghubungkan Tailwind CSS untuk membantu mengatur tampilan website. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Menghubungkan SweetAlert2 untuk membuat pop-up dan notifikasi. -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Mengambil jenis huruf DM Sans dari Google Fonts. -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
+    <!-- Menghubungkan Font Awesome untuk menggunakan ikon pada website. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Menghubungkan file CSS eksternal untuk mengatur desain tambahan website. -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<!-- Mengatur area utama halaman dashboard.
+     min-h-screen membuat tinggi minimal halaman memenuhi layar.
+     relative menjadi acuan posisi elemen di dalamnya.
+     overflow-x-hidden mencegah halaman bergeser secara horizontal.
+     bg-blue-50 memberikan warna latar biru muda. -->
+<body class="min-h-screen relative overflow-x-hidden bg-blue-50">
+
+    <!-- 2. HEADER & NAVIGASI UTAMA -->
+    <!-- Membuat bagian navigasi utama dengan latar biru tua dan teks putih.
+         flex mengatur susunan elemen.
+         justify-between memberi jarak antara logo, menu, dan tombol logout.
+         shadow-md memberikan efek bayangan pada navigasi. -->
+    <nav class="bg-[#1e3a8a] text-white px-6 py-4 flex flex-wrap justify-between items-center relative z-50 shadow-md">
+
+        <!-- Bagian untuk menampilkan logo dan nama aplikasi SITTA-UT. -->
+        <div class="flex items-center gap-4">
+            <!-- Logo akan mengarahkan pengguna kembali ke halaman dashboard. -->
+            <a href="dashboard.html" class="flex items-center gap-3">
+
+                <!-- Membuat kotak putih sebagai latar belakang logo. -->
+                <div class="bg-white p-2 rounded-lg shadow-sm">
+
+                    <!-- Menampilkan logo Universitas Terbuka.
+                         Jika gambar ut.png gagal dimuat, browser menggunakan logo_ut.svg. -->
+                    <img 
+                        src="assets/ut.png" 
+                        onerror="this.onerror=null; this.src='assets/logo_ut.svg';"
+                        alt="Logo UT"
+                        class="w-9 h-9 object-contain"
+                    >
+                </div>
+
+                <!-- Menampilkan nama aplikasi SITTA-UT.
+                     Tulisan disembunyikan pada ukuran layar kecil. -->
+                <span class="font-bold text-xl tracking-wide hidden sm:block">
+                    SITTA-UT
+                </span>
+            </a>
+        </div>
+
+        <!-- Membuat daftar menu navigasi utama.
+             Menu ditampilkan pada layar ukuran medium ke atas. -->
+        <ul class="hidden md:flex space-x-8 items-center font-medium text-sm">
+
+            <!-- Menu untuk membuka halaman informasi bahan ajar. -->
+            <li>
+                <a href="stock.html" class="nav-link hover:text-orange-300">
+                    Informasi Bahan Ajar
+                </a>
+            </li>
+
+            <!-- Menu untuk membuka halaman tracking pengiriman. -->
+            <li>
+                <a href="tracking.html" class="nav-link hover:text-orange-300">
+                    Tracking Pengiriman
+                </a>
+            </li>
+
+            <!-- Menu laporan yang memiliki submenu atau pilihan tambahan. -->
+            <li class="relative group pb-2 pt-2">
+                <a href="laporan.html" class="nav-link hover:text-orange-300 flex items-center gap-1">
+                    Laporan
+
+                    <!-- Menampilkan ikon panah ke bawah sebagai tanda submenu. -->
+                    <i class="fa-solid fa-caret-down"></i>
+                </a>
+
+                <!-- Membuat submenu laporan.
+                     Submenu akan muncul ketika kursor diarahkan ke menu Laporan. -->
+                <div class="hidden group-hover:block absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-xl overflow-hidden border border-gray-100 z-50">
+
+                    <!-- Pilihan untuk membuka bagian monitoring progress DO bahan ajar. -->
+                    <a href="laporan.html#monitoring" class="block px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 border-b border-gray-50">
+                        Monitoring Progress DO Bahan Ajar
+                    </a>
+
+                    <!-- Pilihan untuk membuka bagian rekap bahan ajar. -->
+                    <a href="laporan.html#rekap" class="block px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600">
+                        Rekap Bahan Ajar
+                    </a>
+                </div>
+            </li>
+
+            <!-- Menu untuk membuka halaman histori transaksi. -->
+            <li>
+                <a href="histori.html" class="nav-link hover:text-orange-300">
+                    Histori Transaksi
+                </a>
+            </li>
+        </ul>
+
+        <!-- Membuat tombol logout untuk keluar dari akun pengguna. -->
+        <button id="logoutBtn"
+            class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-5 rounded-lg shadow transition-colors flex items-center gap-2 text-sm mt-4 md:mt-0 cursor-pointer">
+
+            <!-- Menampilkan ikon keluar dari Font Awesome. -->
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </button>
+    </nav>
+
+    <!-- 3. BANNER SALAM UTAMA (GREETING CARD) -->
+    <!-- Membuat banner ucapan selamat datang pada bagian atas dashboard.
+         absolute mengatur posisi banner.
+         top-24 memberikan jarak dari bagian atas.
+         left-1/2 dan -translate-x-1/2 membuat banner berada di tengah.
+         z-40 mengatur urutan lapisan banner. -->
+    <div class="absolute top-24 left-1/2 -translate-x-1/2 z-40 w-full px-4">
+
+        <!-- Membuat kotak banner berwarna putih dengan sudut melengkung dan bayangan. -->
+        <div class="max-w-2xl mx-auto bg-white/90 backdrop-blur-md shadow-xl rounded-2xl px-6 py-4 border border-gray-100 flex items-center justify-between">
+
+            <div>
+                <!-- Menampilkan tulisan selamat datang kepada pengguna. -->
+                <p class="text-sm text-gray-500">
+                    Selamat datang 👋
+                </p>
+
+                <!-- Tempat menampilkan salam dan nama pengguna secara otomatis. -->
+                <h2 id="greetingText" class="text-2xl font-bold text-blue-900">
+                    Loading...
+                </h2>
+            </div>
+
+            <!-- Tempat menampilkan ikon sesuai waktu saat ini.
+                 Ikon disembunyikan pada ukuran layar kecil. -->
+            <div class="hidden sm:flex items-center justify-center w-14 h-14 rounded-full bg-orange-100 text-orange-500 text-2xl">
+                <i id="greetingIcon" class="fa-solid fa-sun"></i>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Membuat bagian dekorasi gelombang pada dashboard menggunakan SVG. -->
+    <div class="relative z-10">
+
+        <!-- SVG digunakan untuk membuat gambar gelombang.
+             viewBox menentukan area gambar.
+             w-full membuat gambar memenuhi lebar halaman.
+             preserveAspectRatio="none" membuat gambar menyesuaikan ukuran wadah. -->
+        <svg viewBox="0 0 1440 250"
+            class="w-full h-auto drop-shadow-md -mt-1"
+            preserveAspectRatio="none">
+
+            <!-- Membuat gelombang pertama dengan warna oranye
+                 dan tingkat transparansi sebesar 80%. -->
+            <path fill="#f97316" fill-opacity="0.8"
+                d="M0,64L48,85.3C96,107,192,149,288,154.7C384,160,480,128,576,106.7C672,85,768,75,864,85.3C960,96,1056,128,1152,144C1248,160,1344,160,1392,160L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z">
+            </path>
+
+            <!-- Membuat gelombang kedua dengan warna biru tua. -->
+            <path fill="#1e3a8a" fill-opacity="1"
+                d="M0,128L48,122.7C96,117,192,107,288,112C384,117,480,139,576,149.3C672,160,768,160,864,138.7C960,117,1056,75,1152,64C1248,53,1344,75,1392,85.3L1440,96L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z">
+            </path>
+
+        </svg>
+    </div>
+
+    <!-- 4. MENU UTAMA DASHBOARD (CARD NAVIGATION) -->
+    <!-- Membuat bagian utama dashboard yang berisi kumpulan kartu menu.
+         container mengatur lebar konten.
+         mx-auto membuat konten berada di tengah.
+         px-4 memberikan jarak kiri dan kanan.
+         relative z-20 membuat kartu berada di atas dekorasi gelombang.
+         pb-12 memberikan jarak pada bagian bawah. -->
+    <main class="container mx-auto px-4 -mt-16 md:-mt-24 relative z-20 pb-12">
+
+        <!-- Mengatur susunan kartu menu menggunakan sistem grid.
+             grid-cols-1 menampilkan satu kolom pada layar kecil.
+             md:grid-cols-4 menampilkan empat kolom pada layar medium ke atas.
+             gap-6 memberikan jarak antar kartu. -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
+
+            <!-- KARTU 1: INFORMASI BAHAN AJAR -->
+            <!-- Membuat kartu menu dengan latar putih, sudut melengkung, dan bayangan. -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+
+                <!-- Membuat tempat ikon buku sebagai penanda menu bahan ajar. -->
+                <div class="bg-blue-100 w-14 h-14 rounded-full flex items-center justify-center text-blue-900 text-2xl mb-4">
+                    <i class="fa-solid fa-book"></i>
+                </div>
+
+                <!-- Menampilkan judul menu informasi bahan ajar. -->
+                <h3 class="text-xl font-bold text-blue-900 mb-2">
+                    Informasi Bahan Ajar
+                </h3>
+
+                <!-- Menjelaskan fungsi menu untuk mengelola stok bahan ajar. -->
+                <p class="text-gray-500 text-sm mb-5">
+                    Kelola stok bahan ajar berdasarkan UPBJJ, kategori, dan jumlah stok.
+                </p>
+
+                <!-- Tombol untuk membuka halaman informasi stok bahan ajar. -->
+                <a href="stock.html" class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-5 py-2.5 rounded-lg transition-colors">
+                    Buka Stok
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- KARTU 2: TRACKING PENGIRIMAN -->
+            <!-- Membuat kartu menu untuk memantau pengiriman bahan ajar. -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+
+                <!-- Membuat tempat ikon truk sebagai penanda menu pengiriman. -->
+                <div class="bg-orange-100 w-14 h-14 rounded-full flex items-center justify-center text-orange-500 text-2xl mb-4">
+                    <i class="fa-solid fa-truck"></i>
+                </div>
+
+                <!-- Menampilkan judul menu tracking pengiriman. -->
+                <h3 class="text-xl font-bold text-blue-900 mb-2">
+                    Tracking Pengiriman
+                </h3>
+
+                <!-- Menjelaskan fungsi menu untuk melacak nomor DO bahan ajar. -->
+                <p class="text-gray-500 text-sm mb-5">
+                    Lacak nomor DO bahan ajar dan pantau perjalanan pengiriman.
+                </p>
+
+                <!-- Tombol untuk membuka halaman tracking pengiriman. -->
+                <a href="tracking.html" class="inline-flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white font-bold px-5 py-2.5 rounded-lg transition-colors">
+                    Lacak DO
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- KARTU 3: LAPORAN -->
+            <!-- Membuat kartu menu untuk melihat laporan bahan ajar. -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+
+                <!-- Membuat tempat ikon grafik sebagai penanda menu laporan. -->
+                <div class="bg-gray-100 w-14 h-14 rounded-full flex items-center justify-center text-gray-700 text-2xl mb-4">
+                    <i class="fa-solid fa-chart-column"></i>
+                </div>
+
+                <!-- Menampilkan judul menu laporan. -->
+                <h3 class="text-xl font-bold text-blue-900 mb-2">
+                    Laporan
+                </h3>
+
+                <!-- Menjelaskan fungsi menu untuk melihat monitoring DO dan rekap stok. -->
+                <p class="text-gray-500 text-sm mb-5">
+                    Lihat monitoring DO dan rekap stok bahan ajar.
+                </p>
+
+                <!-- Tombol untuk membuka halaman laporan. -->
+                <a href="laporan.html" class="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-800 text-white font-bold px-5 py-2.5 rounded-lg transition-colors">
+                    Lihat Laporan
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- KARTU 4: HISTORI TRANSAKSI -->
+            <!-- Membuat kartu menu untuk melihat riwayat transaksi. -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+
+                <!-- Membuat tempat ikon jam sebagai penanda histori transaksi. -->
+                <div class="bg-green-100 w-14 h-14 rounded-full flex items-center justify-center text-green-700 text-2xl mb-4">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+
+                <!-- Menampilkan judul menu histori transaksi. -->
+                <h3 class="text-xl font-bold text-blue-900 mb-2">
+                    Histori Transaksi
+                </h3>
+
+                <!-- Menjelaskan fungsi menu untuk melihat riwayat transaksi dan DO. -->
+                <p class="text-gray-500 text-sm mb-5">
+                    Lihat riwayat transaksi dan data DO yang pernah dibuat.
+                </p>
+
+                <!-- Tombol untuk membuka halaman histori transaksi. -->
+                <a href="histori.html" class="inline-flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-bold px-5 py-2.5 rounded-lg transition-colors">
+                    Lihat Histori
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- 5. LOGIKA SCRIPT LOGOUT & GREETING DINAMIS -->
+    <script>
+        // Mengambil nama user dari localStorage dan mendeteksi jam saat ini
+        const namaUser = localStorage.getItem("namaUser") || "Admin SITTA";
+        const hour = new Date().getHours();
+
+        let greeting = "";
+        let iconClass = "";
+        // Penentuan teks salam & icon berdasarkan waktu (Pagi/Siang/Sore/Malam)
+        if (hour >= 4 && hour < 11) {
+            greeting = "Selamat Pagi";
+            iconClass = "fa-solid fa-sun";
+        } else if (hour >= 11 && hour < 15) {
+            greeting = "Selamat Siang";
+            iconClass = "fa-solid fa-cloud-sun";
+        } else if (hour >= 15 && hour < 18) {
+            greeting = "Selamat Sore";
+            iconClass = "fa-solid fa-cloud";
+        } else {
+            greeting = "Selamat Malam";
+            iconClass = "fa-solid fa-moon";
+        }
+        // Cetak teks salam dan pasang icon-nya ke DOM HTML
+        document.getElementById("greetingText").innerText = greeting + ", " + namaUser;
+        document.getElementById("greetingIcon").className = iconClass;
+        // Logika Interaksi Tombol Logout + Konfirmasi Pop-up SweetAlert2
+        const logoutBtn = document.getElementById("logoutBtn");
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", function () {
+                Swal.fire({
+                    title: "Yakin ingin logout?",
+                    text: "Anda akan keluar dari sistem.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#1e3a8a",
+                    cancelButtonColor: "#f97316",
+                    confirmButtonText: "Logout",
+                    cancelButtonText: "Batal"
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        // Menghapus seluruh token/data sesi user dari storage lokal
+                        localStorage.removeItem("isLogin");
+                        localStorage.removeItem("namaUser");
+                        localStorage.removeItem("roleUser");
+                        localStorage.removeItem("lokasiUser");
+                        // Notifikasi sukses lalu redirect balik ke login.html
+                        Swal.fire({
+                            title: "Logout Berhasil",
+                            text: "Anda telah keluar dari sistem.",
+                            icon: "success",
+                            confirmButtonColor: "#1e3a8a"
+                        }).then(function () {
+                            window.location.href = "login.html";
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+
+</body>
+</html>
